@@ -13,7 +13,7 @@ const getTopicUser = async (req, res) => {
 
 const getTopicById = async (req, res) => {
     const id = req.params.id;
-    const response = await pool.query('SELECT * FROM temas WHERE id_tema=$1', [id])
+    const response = await pool.query('SELECT * FROM vista_foro WHERE id_tema=$1', [id])
     res.json(response.rows);
 }
 

@@ -8,6 +8,7 @@ app.use(express.urlencoded({extended: true}));
 //routes
 app.use(require('./routes/usuarioRoutes'));
 app.use(require('./routes/temaRoutes'));
+app.use(require('./routes/respuestaRoutes'));
 
 app.listen(3000);
 console.log('Server on port 3000');

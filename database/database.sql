@@ -48,10 +48,35 @@ CREATE VIEW vista_foro
 AS SELECT t.titulo, u.nick, t.mensaje, t.fecha, t.respuesta 
 FROM temas as t join usuarios as u on (t.id_usuario = u.id_usuario);
 
-
 CREATE VIEW vista_foro
- AS SELECT t.id_tema, t.titulo, u.nick, t.id_usuario, t.mensaje, t.fecha, t.respuesta 
- FROM temas as t join usuarios as u on (t.id_usuario = u.id_usuario);
+AS SELECT t.id_tema, t.titulo, u.nick, t.id_usuario, t.mensaje, t.fecha, t.respuesta 
+FROM temas as t join usuarios as u on (t.id_usuario = u.id_usuario);
+
+CREATE VIEW vista_respuestas AS 
+SELECT r.id_respuesta, r.id_tema, t.nick, r.mensaje, r.fecha from vista_foro as t
+join respuestas as r on (t.id_tema=r.id_tema)
+
+--AUMENTAR RESPUESTA
+CREATE OR REPLACE FUNCTION actualizar_tema() 
+	RETURNS TRIGGER AS $actualizar_tema$ 
+	DECLARE
+		cantidadRespuesta Integer;
+	BEGIN 
+		update temas set respuesta = (respuesta +1)
+		where temas.id_tema = New."id_tema";
+		RETURN NEW;
+END; 
+$actualizar_tema$ LANGUAGE plpgsql;
+	
+CREATE TRIGGER actualizar_tema BEFORE INSERT
+ON respuestas FOR EACH ROW
+EXECUTE PROCEDURE actualizar_tema();
+
+--Prueba del trigger
+insert into respuestas(id_tema, id_usuario, mensaje, fecha)
+values (4, 1,'Respuesta', current_date);
+
+select * from respuestas
 /*
 https://programarivm.com/crear-una-base-de-datos-mysql-para-un-foro-de-debate
 https://code.tutsplus.com/es/tutorials/how-to-create-a-phpmysql-powered-forum-from-scratch--net-10188
